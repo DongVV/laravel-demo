@@ -11,10 +11,15 @@ class Project extends Model
     ];
 
     protected $guarded = [
-        
+
     ];
 
     public function tasks() {
         return $this->hasMany(Task::class);
+    }
+
+    public function addTask($task) {
+        // return $description;
+        return $this->tasks()->create($task);
     }
 }
