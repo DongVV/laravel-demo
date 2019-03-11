@@ -9,9 +9,7 @@
         </div>
 
         <div class="form-group">
-            <textarea name="description" class="form-control" placeholder="Project description">
-            {{$project->description}}
-            </textarea>
+            <textarea name="description" class="form-control" placeholder="Project description">{{$project->description}}</textarea>
         </div>
 
         <div class="form-group">
