@@ -5,7 +5,7 @@ New project: {{$project->title}}
 {{$project->description}}
 The body of your message.
 
-@component('mail::button', ['url' => url('/project/'.$project->id)])
+@component('mail::button', ['url' => url('/projects/'.$project->id)])
 Button Text
 @endcomponent
 

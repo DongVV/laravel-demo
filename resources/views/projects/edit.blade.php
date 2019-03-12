@@ -16,6 +16,9 @@
             <button type="submit" class="btn btn-primary">Update</button>
         </div>
     </form>
+
+    @include('errors')
+
     <form method="POST" action="/projects/{{$project->id}}">
         @method('DELETE')
         @csrf
@@ -24,5 +27,5 @@
         </div>
     </form>
 </div>
-      
+
 @endsection

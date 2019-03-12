@@ -19,16 +19,10 @@ class ProjectsController extends Controller
 
     public function index()
     {
-        // dd(auth()->user());
-
-        $projects = Project::where('owner_id', auth()->id())->get();
-        // dump($projects);
-        // cache()->rememberForever('stats', function(){
-        //     return ['lessons'=>1300, 'hours'=>50000, 'series'=>100];
-        // });
-        // $stats = cache()->get('stats');
-        // dump($stats);
-        return view('projects.index', compact('projects'));
+        //get all project for the auth's user
+        return view('projects.index', [
+            'projects' => auth()->user()->projects
+        ]);
     }
 
     /**
@@ -49,18 +43,14 @@ class ProjectsController extends Controller
      */
     public function store(Request $request)
     {
-        $attribute = $request->validate([
-            'title' => ['required', 'min:3', 'max:255'],
-            'description' => ['required', 'min:3', 'max:255']
-        ]);
-        // dd($attribute + ['owner_id'=> auth()->id()]);
-        $attribute['owner_id'] = auth()->id();
-        $project = Project::create($attribute);
+        $attributes = $this->validateProject($request);
+        $attributes['owner_id'] = auth()->id();
+        $project = Project::create($attributes);
 
         \Mail::to('demo@demo.com')->send(
             new ProjectCreate($project)
         );
-        
+
         return redirect('/projects');
     }
 
@@ -72,8 +62,6 @@ class ProjectsController extends Controller
      */
     public function show(Project $project)
     {
-        // abort_unless(auth()->user()->owns($project), 403);
-        // $this->authorize('view', $project);
         return view('projects.show', compact('project'));
     }
 
@@ -85,7 +73,6 @@ class ProjectsController extends Controller
      */
     public function edit(Project $project)
     {
-        // dd($project);
         return view('projects.edit', compact('project'));
     }
 
@@ -98,10 +85,11 @@ class ProjectsController extends Controller
      */
     public function update(Request $request, Project $project)
     {
-        // $project->title = $request->title;
-        // $project->description = $request->description;
-        // dd($request->all());
-        $project->update($request->all());
+        // $attribute = $request->validate([
+        //     'title' => ['required', 'min:3', 'max:255'],
+        //     'description' => ['required', 'min:3', 'max:255']
+        // ]);
+        $project->update($this->validateProject($request));
         return redirect('/projects');
     }
 
@@ -115,5 +103,12 @@ class ProjectsController extends Controller
     {
         $project->delete();
         return redirect('/projects');
+    }
+
+    protected function validateProject($request) {
+        return $request->validate([
+            'title' => ['required', 'min:3', 'max:255'],
+            'description' => ['required', 'min:3', 'max:255']
+        ]);
     }
 }
