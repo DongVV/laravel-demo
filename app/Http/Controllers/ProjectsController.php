@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Project;
 use Illuminate\Http\Request;
+use App\Mail\ProjectCreate;
 
 class ProjectsController extends Controller
 {
@@ -12,11 +13,21 @@ class ProjectsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct() {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
-        $projects = Project::all();
-        // return $projects;
-        // var_dump($projects);die;
+        // dd(auth()->user());
+
+        $projects = Project::where('owner_id', auth()->id())->get();
+        // dump($projects);
+        // cache()->rememberForever('stats', function(){
+        //     return ['lessons'=>1300, 'hours'=>50000, 'series'=>100];
+        // });
+        // $stats = cache()->get('stats');
+        // dump($stats);
         return view('projects.index', compact('projects'));
     }
 
@@ -38,10 +49,17 @@ class ProjectsController extends Controller
      */
     public function store(Request $request)
     {
-        Project::create($request->validate([
+        $attribute = $request->validate([
             'title' => ['required', 'min:3', 'max:255'],
             'description' => ['required', 'min:3', 'max:255']
-        ]));
+        ]);
+        // dd($attribute + ['owner_id'=> auth()->id()]);
+        $attribute['owner_id'] = auth()->id();
+        $project = Project::create($attribute);
+
+        \Mail::to('demo@demo.com')->send(
+            new ProjectCreate($project)
+        );
         
         return redirect('/projects');
     }
@@ -54,6 +72,8 @@ class ProjectsController extends Controller
      */
     public function show(Project $project)
     {
+        // abort_unless(auth()->user()->owns($project), 403);
+        // $this->authorize('view', $project);
         return view('projects.show', compact('project'));
     }
 
