@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Events\ProjectCreated;
 
 class Project extends Model
 {
@@ -13,6 +14,14 @@ class Project extends Model
     protected $guarded = [
 
     ];
+
+    protected $dispatchersEvents = [
+        'create' => ProjectCreated::class
+    ];
+
+    public function owner() {
+        return $this->belongsTo(User::class);
+    }
 
     public function tasks() {
         return $this->hasMany(Task::class);

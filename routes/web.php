@@ -1,8 +1,12 @@
 <?php
 
+use App\Notifications\SubscriptionRenewalFailed;
 
-
-Route::get('/', 'PagesController@home');
+Route::get('/', function() {
+    $user = App\User::first();
+    $user->notify(new SubscriptionRenewalFailed());
+    return 'done!';
+});
 
 Route::get('/about', 'PagesController@about');
 
